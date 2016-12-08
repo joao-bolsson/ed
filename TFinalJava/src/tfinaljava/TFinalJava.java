@@ -92,7 +92,14 @@ public class TFinalJava {
                 System.out.println("Lendo o mapa");
                 mapa.leMapa();
                 System.out.println("Lendo cidades");
-                mapa.leRotas();
+                mapa.leCidades();
+
+                System.out.println("Digite o número de cidades intermediárias: ");
+                int cidades_intermediarias = Integer.parseInt(ler.nextLine());
+                System.out.println("Digite a distância: ");
+                int distancia = Integer.parseInt(ler.nextLine());
+                
+                mapa.saida(cidades_intermediarias, distancia);
             }
         } catch (IOException e) {
             System.out.println("ERRO: " + e.getMessage());
@@ -113,8 +120,12 @@ public class TFinalJava {
 
         public void insereLigacao(final Ligacao ligacao) {
             ligacoes.add(ligacao);
+            Cidade origem = ligacao.getOrigem();
+            if (!cidades.contains(origem)) {
+                cidades.add(origem);
+            }
         }
-        
+
         public Cidade getCidade(final String nome) {
             Iterator<Ligacao> iterator = ligacoes.iterator();
             while (iterator.hasNext()) {
@@ -150,12 +161,16 @@ public class TFinalJava {
             }
         }
 
-        private void leRotas() {
-            Iterator<Ligacao> iterator = ligacoes.iterator();
+        private void leCidades() {
+            Iterator<Cidade> iterator = cidades.iterator();
             while (iterator.hasNext()) {
-                Ligacao next = iterator.next();
-                System.out.println(next.getOrigem() + " -> " + next.getOrigem().getDestinos().size());
+                Cidade cidade = iterator.next();
+                System.out.println(cidade.toString() + " -> " + cidade.getDestinos().size() + " destinos");
             }
+        }
+
+        private void saida(final int num_intermed, final int dist) {
+            
         }
 
     }
