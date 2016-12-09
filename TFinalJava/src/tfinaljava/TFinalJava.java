@@ -127,7 +127,7 @@ public class TFinalJava {
                 System.out.println("H -> final");
                 return;
             }
-            List<Cidade> destinos = cidade.getDestinos();
+            List<Cidade> destinos = getCidade(cidade.toString()).getDestinos();
             int cont = destinos.size();
             for (int i = 0; i < cont; i++) {
                 System.out.print(cidade.toString() + " -> ");
