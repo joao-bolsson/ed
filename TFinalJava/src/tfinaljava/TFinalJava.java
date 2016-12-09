@@ -93,13 +93,14 @@ public class TFinalJava {
                 mapa.leMapa();
                 System.out.println("Lendo cidades");
                 mapa.leCidades();
+                System.out.println("Cidades lidas");
+                Cidade cidade = mapa.getCidade("C");
+                if (mapa.cidadeExiste(cidade)) {
+                    mapa.busca(cidade);
+                } else {
+                    System.out.println("cidade nao existe");
+                }
 
-                System.out.println("Digite o número de cidades intermediárias: ");
-                int cidades_intermediarias = Integer.parseInt(ler.nextLine());
-                System.out.println("Digite a distância: ");
-                int distancia = Integer.parseInt(ler.nextLine());
-                
-                mapa.saida(cidades_intermediarias, distancia);
             }
         } catch (IOException e) {
             System.out.println("ERRO: " + e.getMessage());
@@ -117,6 +118,24 @@ public class TFinalJava {
             ligacoes = new ArrayList<>();
             cidades = new ArrayList<>();
         }
+        
+        /**
+         * Função que implementa uma busca em produndidade no mapa
+         */
+        private void busca(final Cidade cidade) {
+            if (cidade.toString().equals("H")) {
+                System.out.println("H -> final");
+                return;
+            }
+            List<Cidade> destinos = cidade.getDestinos();
+            int cont = destinos.size();
+            for (int i = 0; i < cont; i++) {
+                System.out.print(cidade.toString() + " -> ");
+                busca(destinos.get(i));
+            }
+        }
+        
+        
 
         public void insereLigacao(final Ligacao ligacao) {
             ligacoes.add(ligacao);
@@ -167,10 +186,6 @@ public class TFinalJava {
                 Cidade cidade = iterator.next();
                 System.out.println(cidade.toString() + " -> " + cidade.getDestinos().size() + " destinos");
             }
-        }
-
-        private void saida(final int num_intermed, final int dist) {
-            
         }
 
     }
