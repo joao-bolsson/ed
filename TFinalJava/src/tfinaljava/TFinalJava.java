@@ -91,9 +91,11 @@ public class TFinalJava {
                     System.out.println("==== GERANDO ROTAS ====");
                     System.out.print("Origem: ");
                     Cidade origem = mapa.getCidade(ler.next());
-                    if (origem != null) {
+                    System.out.print("Destino: ");
+                    Cidade destino = mapa.getCidade(ler.next());
+                    if (origem != null && destino != null) {
                         mapa.limpaPilha();
-                        mapa.busca(origem);
+                        mapa.busca(origem, destino);
                     } else {
                         System.out.println("ERRO: uma das cidades não existe no mapa.");
                     }
@@ -174,8 +176,8 @@ public class TFinalJava {
             pilha.esvazia();
         }
 
-        private void busca(final Cidade cidade) {
-            if (cidade.toString().equals("H")) {
+        private void busca(final Cidade cidade, final Cidade destino) {
+            if (cidade.equals(destino)) {
                 if (!pilha.contains(cidade.toString())) {
                     pilha.insere(cidade.toString());
                 }
@@ -188,7 +190,7 @@ public class TFinalJava {
                 if (!pilha.contains(cidade.toString())) {
                     pilha.insere(cidade.toString());
                 }
-                busca(destinos.get(i));
+                busca(destinos.get(i), destino);
                 pilha.remove();
             }
         }
