@@ -155,6 +155,10 @@ public class TFinalJava {
             rota.clear();
         }
 
+        public boolean isEmpty() {
+            return rota.isEmpty();
+        }
+
     }
 
     private static class Mapa {
@@ -192,6 +196,9 @@ public class TFinalJava {
                 }
                 busca(destinos.get(i), destino);
                 pilha.remove();
+            }
+            if (pilha.isEmpty()) {
+                System.out.println("Não há rota disponível");
             }
         }
 
