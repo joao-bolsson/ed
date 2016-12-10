@@ -98,7 +98,6 @@ public class TFinalJava {
                     System.out.print("Distância: ");
                     int distancia = Integer.parseInt(ler.next());
                     if (origem != null && destino != null) {
-                        mapa.limpaPilha();
                         mapa.setParametros(num_intermed, distancia);
                         mapa.busca(origem, destino);
                     } else {
@@ -188,10 +187,19 @@ public class TFinalJava {
             return rota.isEmpty();
         }
 
+        /**
+         * @return Tamanho da pilha.
+         */
         public int size() {
             return rota.size();
         }
 
+        /**
+         * @return A lista usada na pilha.
+         */
+        public List<String> getPilha() {
+            return rota;
+        }
     }
 
     private static class Mapa {
@@ -202,7 +210,7 @@ public class TFinalJava {
         private final List<Cidade> cidades;
         // pilha que armazena as rotas possiveis para cada busca
         private final Pilha pilha;
-
+        // número de cidades intermediárias e a distância máxima desejada pelo usuario em cada busca.
         private int num_intermed, distancia;
 
         /**
@@ -221,6 +229,7 @@ public class TFinalJava {
          * @param distancia Distância máxima informada pelo usuário.
          */
         public void setParametros(final int num_intermed, final int distancia) {
+            limpaPilha();
             this.num_intermed = num_intermed;
             this.distancia = distancia;
         }
@@ -230,6 +239,38 @@ public class TFinalJava {
          */
         public void limpaPilha() {
             pilha.esvazia();
+        }
+
+        /**
+         * @return A distância total de uma rota.
+         */
+        public int getDistancia() {
+            List<String> rota = pilha.getPilha();
+            String origem, destino;
+            int distanciaRota = 0, size = rota.size();
+            for (int i = 0; i < size - 1; i++) {
+                origem = rota.get(i);
+                destino = rota.get(i + 1);
+                distanciaRota += getLigacao(origem, destino).getDistancia();
+            }
+            return distanciaRota;
+        }
+
+        /**
+         * @param origem Cidade origem da ligação.
+         * @param destino Cidade destino da ligação.
+         * @return A ligação do mapa entre a origem e o destino.
+         */
+        public Ligacao getLigacao(final String origem, final String destino) {
+            Iterator<Ligacao> iterator = ligacoes.iterator();
+            while (iterator.hasNext()) {
+                Ligacao ligacao = iterator.next();
+                if (ligacao.getOrigem().toString().equals(origem)
+                        && ligacao.getDestino().toString().equals(destino)) {
+                    return ligacao;
+                }
+            }
+            return null;
         }
 
         /**
@@ -243,12 +284,13 @@ public class TFinalJava {
                 if (!pilha.contains(origem.toString())) {
                     pilha.insere(origem.toString());
                 }
+                int distanciaRota = getDistancia();
                 // o trecho deve conter o número de cidades intermediárias + (origem e destino)
-                if (pilha.size() == (num_intermed + 2)) {
+                if (pilha.size() == (num_intermed + 2) && distanciaRota <= distancia) {
                     System.out.print("O trecho de rodovia (");
                     pilha.imprime();
-                    System.out.println(") passa por " + num_intermed + " cidades intermediárias. A distância da origem "
-                            + "e do destino é de xxx km, que é inferior a " + distancia + " km.");
+                    System.out.println(") passa por " + num_intermed + " cidades intermediárias.\n A distância da origem "
+                            + "e do destino é de " + distanciaRota + " km, que é inferior a " + distancia + " km.");
                 }
                 return;
             }
