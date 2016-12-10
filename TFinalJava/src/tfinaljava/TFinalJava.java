@@ -28,7 +28,6 @@ import java.util.Scanner;
 public class TFinalJava {
 
     private static Scanner ler;
-    private static boolean mapa_direcionado = true;
 
     /**
      *
@@ -63,30 +62,23 @@ public class TFinalJava {
                     String[] lineSplit = next.split(", ");
                     // origem
                     Cidade cidade = new Cidade(lineSplit[0]);
+
+                    if (mapa.cidadeExiste(cidade)) { // se está no mapa, pega ela
+                        cidade = mapa.getCidade(lineSplit[0]);
+                    }
                     // destino
                     Cidade destino = new Cidade(lineSplit[1]);
                     // distancia
                     int dist = Integer.parseInt(lineSplit[2]);
 
-                    if (!mapa.cidadeExiste(cidade)) { // se a cidade não está no mapa como origem
+                    // insere um novo destino para a cidade
+                    cidade.insereDestino(destino);
 
-                        // insere um novo destino para a cidade
-                        cidade.insereDestino(destino);
+                    // nova ligação entre cidades
+                    Ligacao ligacao = new Ligacao(cidade, destino, dist);
 
-                        // nova ligação entre cidades
-                        Ligacao ligacao = new Ligacao(cidade, destino, dist);
-
-                        // insere a ligação no mapa
-                        mapa.insereLigacao(ligacao);
-                    } else {
-                        cidade = mapa.getCidade(lineSplit[0]);
-                        cidade.insereDestino(destino);
-                        // nova ligação entre cidades
-                        Ligacao ligacao = new Ligacao(cidade, destino, dist);
-
-                        // insere a ligação no mapa
-                        mapa.insereLigacao(ligacao);
-                    }
+                    // insere a ligação no mapa
+                    mapa.insereLigacao(ligacao);
                 }
                 System.out.println("Mapa completo");
                 System.out.println("Lendo o mapa");
@@ -94,11 +86,29 @@ public class TFinalJava {
                 System.out.println("Lendo cidades");
                 mapa.leCidades();
                 System.out.println("Cidades lidas");
-                Cidade cidade = mapa.getCidade("C");
-                if (mapa.cidadeExiste(cidade)) {
-                    mapa.busca(cidade);
-                } else {
-                    System.out.println("cidade nao existe");
+                boolean parar = false;
+                while (!parar) {
+                    System.out.println("==== GERANDO ROTAS ====");
+                    System.out.print("Origem: ");
+                    String origem = ler.next();
+                    Cidade cidade = mapa.getCidade(origem);
+                    if (mapa.cidadeExiste(cidade)) {
+                        mapa.busca(cidade);
+                    } else {
+                        System.out.println("cidade nao existe");
+                    }
+                    boolean validChar = false;
+                    while (!validChar) {
+                        System.out.print("Fazer outra busca? [s/n]");
+                        String continuar = ler.next();
+                        if (continuar.equalsIgnoreCase("s")) {
+                            validChar = true;
+                        } else if (continuar.equalsIgnoreCase("n")) {
+                            validChar = true;
+                            parar = true;
+                        }
+                    }
+
                 }
 
             }
@@ -118,10 +128,7 @@ public class TFinalJava {
             ligacoes = new ArrayList<>();
             cidades = new ArrayList<>();
         }
-        
-        /**
-         * Função que implementa uma busca em produndidade no mapa
-         */
+
         private void busca(final Cidade cidade) {
             if (cidade.toString().equals("H")) {
                 System.out.println("H -> final");
@@ -134,41 +141,29 @@ public class TFinalJava {
                 busca(destinos.get(i));
             }
         }
-        
-        
 
         public void insereLigacao(final Ligacao ligacao) {
             ligacoes.add(ligacao);
-            Cidade origem = ligacao.getOrigem();
-            if (!cidades.contains(origem)) {
-                cidades.add(origem);
+            if (!cidades.contains(ligacao.getOrigem())) {
+                cidades.add(ligacao.getOrigem());
+            } else if (!cidades.contains(ligacao.getDestino())) {
+                cidades.add(ligacao.getDestino());
             }
         }
 
         public Cidade getCidade(final String nome) {
-            Iterator<Ligacao> iterator = ligacoes.iterator();
+            Iterator<Cidade> iterator = cidades.iterator();
             while (iterator.hasNext()) {
-                Ligacao next = iterator.next();
-                Cidade origem = next.getOrigem();
-                Cidade destino = next.getDestino();
-                if (nome.equals(origem.toString())) {
-                    return origem;
-                } else if (nome.equals(destino.toString())) {
-                    return destino;
+                Cidade cidade = iterator.next();
+                if (nome.equals(cidade.toString())) {
+                    return cidade;
                 }
             }
             return null;
         }
 
         public boolean cidadeExiste(final Cidade cidade) {
-            Iterator<Ligacao> iterator = ligacoes.iterator();
-            while (iterator.hasNext()) {
-                Ligacao next = iterator.next();
-                if (next.getOrigem().equals(cidade) || next.getDestino().equals(cidade)) {
-                    return true;
-                }
-            }
-            return false;
+            return cidades.contains(cidade);
         }
 
         public void leMapa() {
