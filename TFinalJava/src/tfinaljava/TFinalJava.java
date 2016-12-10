@@ -92,6 +92,7 @@ public class TFinalJava {
                     System.out.print("Origem: ");
                     Cidade origem = mapa.getCidade(ler.next());
                     if (origem != null) {
+                        mapa.limpaPilha();
                         mapa.busca(origem);
                     } else {
                         System.out.println("ERRO: uma das cidades não existe no mapa.");
@@ -111,9 +112,47 @@ public class TFinalJava {
                 }
 
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             System.out.println("ERRO: " + e.getMessage());
         }
+    }
+
+    public static class Pilha {
+
+        private final List<String> rota;
+
+        public Pilha() {
+            rota = new ArrayList<>();
+        }
+
+        public boolean contains(final String cidade) {
+            return rota.contains(cidade);
+        }
+
+        public void insere(final String nomeCidade) {
+            rota.add(nomeCidade);
+        }
+
+        public void remove() {
+            rota.remove(rota.size() - 1);
+        }
+
+        public void imprime() {
+            Iterator<String> iterator = rota.iterator();
+            while (iterator.hasNext()) {
+                String cidade = iterator.next();
+                String seta = " -> ";
+                if (!iterator.hasNext()) {
+                    seta = "\n";
+                }
+                System.out.print(cidade + seta);
+            }
+        }
+
+        public void esvazia() {
+            rota.clear();
+        }
+
     }
 
     private static class Mapa {
@@ -122,22 +161,35 @@ public class TFinalJava {
         private final List<Ligacao> ligacoes;
         // cidades origem
         private final List<Cidade> cidades;
+        // pilha que armazena as rotas possiveis para cada busca
+        private final Pilha pilha;
 
         public Mapa() {
             ligacoes = new ArrayList<>();
             cidades = new ArrayList<>();
+            pilha = new Pilha();
+        }
+
+        public void limpaPilha() {
+            pilha.esvazia();
         }
 
         private void busca(final Cidade cidade) {
             if (cidade.toString().equals("H")) {
-                System.out.println("H");
+                if (!pilha.contains(cidade.toString())) {
+                    pilha.insere(cidade.toString());
+                }
+                pilha.imprime();
                 return;
             }
             List<Cidade> destinos = getCidade(cidade.toString()).getDestinos();
             int cont = destinos.size();
             for (int i = 0; i < cont; i++) {
-                System.out.print(cidade.toString() + " -> ");
+                if (!pilha.contains(cidade.toString())) {
+                    pilha.insere(cidade.toString());
+                }
                 busca(destinos.get(i));
+                pilha.remove();
             }
         }
 
