@@ -90,12 +90,11 @@ public class TFinalJava {
                 while (!parar) {
                     System.out.println("==== GERANDO ROTAS ====");
                     System.out.print("Origem: ");
-                    String origem = ler.next();
-                    Cidade cidade = mapa.getCidade(origem);
-                    if (mapa.cidadeExiste(cidade)) {
-                        mapa.busca(cidade);
+                    Cidade origem = mapa.getCidade(ler.next());
+                    if (origem != null) {
+                        mapa.busca(origem);
                     } else {
-                        System.out.println("cidade nao existe");
+                        System.out.println("ERRO: uma das cidades não existe no mapa.");
                     }
                     boolean validChar = false;
                     while (!validChar) {
@@ -131,7 +130,7 @@ public class TFinalJava {
 
         private void busca(final Cidade cidade) {
             if (cidade.toString().equals("H")) {
-                System.out.println("H -> final");
+                System.out.println("H");
                 return;
             }
             List<Cidade> destinos = getCidade(cidade.toString()).getDestinos();
