@@ -100,6 +100,10 @@ public class TFinalJava {
                     if (origem != null && destino != null) {
                         mapa.setParametros(num_intermed, distancia);
                         mapa.busca(origem, destino);
+                        if (!mapa.existeRota()) {
+                            System.out.println("Não existe trecho de rodovia que passa por " + num_intermed + " cidades "
+                                    + "intermediárias cuja distância  seja inferior a " + distancia + " km.");
+                        }
                     } else {
                         System.out.println("ERRO: uma das cidades não existe no mapa.");
                     }
@@ -212,6 +216,8 @@ public class TFinalJava {
         private final Pilha pilha;
         // número de cidades intermediárias e a distância máxima desejada pelo usuario em cada busca.
         private int num_intermed, distancia;
+        // flag usada para personalizar a saída da busca quando não existe rota com os parâmtros do usuário.
+        private boolean existeRota;
 
         /**
          * Objeto formado por ligações entre cidades.
@@ -230,8 +236,13 @@ public class TFinalJava {
          */
         public void setParametros(final int num_intermed, final int distancia) {
             limpaPilha();
+            existeRota = false;
             this.num_intermed = num_intermed;
             this.distancia = distancia;
+        }
+
+        public boolean existeRota() {
+            return existeRota;
         }
 
         /**
@@ -287,6 +298,7 @@ public class TFinalJava {
                 int distanciaRota = getDistancia();
                 // o trecho deve conter o número de cidades intermediárias + (origem e destino)
                 if (pilha.size() == (num_intermed + 2) && distanciaRota <= distancia) {
+                    existeRota = true;
                     System.out.print("O trecho de rodovia (");
                     pilha.imprime();
                     System.out.println(") passa por " + num_intermed + " cidades intermediárias.\n A distância da origem "
