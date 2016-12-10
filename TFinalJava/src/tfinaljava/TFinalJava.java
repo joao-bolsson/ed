@@ -93,8 +93,13 @@ public class TFinalJava {
                     Cidade origem = mapa.getCidade(ler.next());
                     System.out.print("Destino: ");
                     Cidade destino = mapa.getCidade(ler.next());
+                    System.out.print("Num cidades intermediárias: ");
+                    int num_intermed = Integer.parseInt(ler.next());
+                    System.out.print("Distância: ");
+                    int distancia = Integer.parseInt(ler.next());
                     if (origem != null && destino != null) {
                         mapa.limpaPilha();
+                        mapa.setParametros(num_intermed, distancia);
                         mapa.busca(origem, destino);
                     } else {
                         System.out.println("ERRO: uma das cidades não existe no mapa.");
@@ -123,40 +128,68 @@ public class TFinalJava {
 
         private final List<String> rota;
 
+        /**
+         * Pilha de cidades.
+         */
         public Pilha() {
             rota = new ArrayList<>();
         }
 
+        /**
+         * @param cidade Nome da cidade
+         * @return Se existe uma cidade com o nome do parâmetro na pilha - true, else - false.
+         */
         public boolean contains(final String cidade) {
             return rota.contains(cidade);
         }
 
+        /**
+         * Insere um novo nome de cidade na pilha.
+         *
+         * @param nomeCidade Nome da cidade.
+         */
         public void insere(final String nomeCidade) {
             rota.add(nomeCidade);
         }
 
+        /**
+         * Desempilha o topo.
+         */
         public void remove() {
             rota.remove(rota.size() - 1);
         }
 
+        /**
+         * Imprime a pilha.
+         */
         public void imprime() {
             Iterator<String> iterator = rota.iterator();
             while (iterator.hasNext()) {
                 String cidade = iterator.next();
                 String seta = " -> ";
                 if (!iterator.hasNext()) {
-                    seta = "\n";
+                    seta = "";
                 }
                 System.out.print(cidade + seta);
             }
         }
 
+        /**
+         * Limpa a pilha.
+         */
         public void esvazia() {
             rota.clear();
         }
 
+        /**
+         * @return Se a pilha está vazia - true, else - false.
+         */
         public boolean isEmpty() {
             return rota.isEmpty();
+        }
+
+        public int size() {
+            return rota.size();
         }
 
     }
@@ -170,29 +203,60 @@ public class TFinalJava {
         // pilha que armazena as rotas possiveis para cada busca
         private final Pilha pilha;
 
+        private int num_intermed, distancia;
+
+        /**
+         * Objeto formado por ligações entre cidades.
+         */
         public Mapa() {
             ligacoes = new ArrayList<>();
             cidades = new ArrayList<>();
             pilha = new Pilha();
         }
 
+        /**
+         * Função utilizada para setar os parametros que devem ser usados na condição de saída do trabalho descrito.
+         *
+         * @param num_intermed Número de cidades intermediárias informado pelo usuário.
+         * @param distancia Distância máxima informada pelo usuário.
+         */
+        public void setParametros(final int num_intermed, final int distancia) {
+            this.num_intermed = num_intermed;
+            this.distancia = distancia;
+        }
+
+        /**
+         * Função que esvazia a pilha.
+         */
         public void limpaPilha() {
             pilha.esvazia();
         }
 
-        private void busca(final Cidade cidade, final Cidade destino) {
-            if (cidade.equals(destino)) {
-                if (!pilha.contains(cidade.toString())) {
-                    pilha.insere(cidade.toString());
+        /**
+         * Função utilizada para encontrar todas as rotas entre a origem e o destino.
+         *
+         * @param origem Cidade de início das rotas.
+         * @param destino Cidade destino das rotas.
+         */
+        private void busca(final Cidade origem, final Cidade destino) {
+            if (origem.equals(destino)) {
+                if (!pilha.contains(origem.toString())) {
+                    pilha.insere(origem.toString());
                 }
-                pilha.imprime();
+                // o trecho deve conter o número de cidades intermediárias + (origem e destino)
+                if (pilha.size() == (num_intermed + 2)) {
+                    System.out.print("O trecho de rodovia (");
+                    pilha.imprime();
+                    System.out.println(") passa por " + num_intermed + " cidades intermediárias. A distância da origem "
+                            + "e do destino é de xxx km, que é inferior a " + distancia + " km.");
+                }
                 return;
             }
-            List<Cidade> destinos = getCidade(cidade.toString()).getDestinos();
+            List<Cidade> destinos = getCidade(origem.toString()).getDestinos();
             int cont = destinos.size();
             for (int i = 0; i < cont; i++) {
-                if (!pilha.contains(cidade.toString())) {
-                    pilha.insere(cidade.toString());
+                if (!pilha.contains(origem.toString())) {
+                    pilha.insere(origem.toString());
                 }
                 busca(destinos.get(i), destino);
                 pilha.remove();
@@ -202,6 +266,11 @@ public class TFinalJava {
             }
         }
 
+        /**
+         * Função utilizada para inserir uma ligação entre cidades.
+         *
+         * @param ligacao A ligação entre cidades a ser inserida.
+         */
         public void insereLigacao(final Ligacao ligacao) {
             ligacoes.add(ligacao);
             if (!cidades.contains(ligacao.getOrigem())) {
@@ -211,6 +280,10 @@ public class TFinalJava {
             }
         }
 
+        /**
+         * @param nome Nome da cidade desejada.
+         * @return Se existe uma cidade com o nome igual ao parâmetro - retorna a cidade, else - null.
+         */
         public Cidade getCidade(final String nome) {
             Iterator<Cidade> iterator = cidades.iterator();
             while (iterator.hasNext()) {
@@ -222,10 +295,17 @@ public class TFinalJava {
             return null;
         }
 
+        /**
+         * @param cidade Uma cidade.
+         * @return Se a cidade está no mapa - true, else - false.
+         */
         public boolean cidadeExiste(final Cidade cidade) {
             return cidades.contains(cidade);
         }
 
+        /**
+         * Função utilizada para ler o mapa, como ele vem do arquivo.
+         */
         public void leMapa() {
             Iterator<Ligacao> iterator = ligacoes.iterator();
             while (iterator.hasNext()) {
@@ -235,6 +315,9 @@ public class TFinalJava {
             }
         }
 
+        /**
+         * Função utilizada para ler as cidades, imprime também a quantidade de destinos diretos que ela tem.
+         */
         private void leCidades() {
             Iterator<Cidade> iterator = cidades.iterator();
             while (iterator.hasNext()) {
@@ -250,20 +333,36 @@ public class TFinalJava {
         private final Cidade origem, destino;
         private final int distancia;
 
+        /**
+         * Uma ligação entre uma cidade de origem e um destino.
+         *
+         * @param origem Cidade de origem.
+         * @param destino Cidade de destino.
+         * @param distancia Distância entre a origem e o destino.
+         */
         public Ligacao(final Cidade origem, final Cidade destino, final int distancia) {
             this.origem = origem;
             this.destino = destino;
             this.distancia = distancia;
         }
 
+        /**
+         * @return Cidade de origem da ligação.
+         */
         public Cidade getOrigem() {
             return origem;
         }
 
+        /**
+         * @return Cidade de destino da ligação.
+         */
         public Cidade getDestino() {
             return destino;
         }
 
+        /**
+         * @return Distância da ligação.
+         */
         public int getDistancia() {
             return distancia;
         }
@@ -275,11 +374,21 @@ public class TFinalJava {
         private final String nome;
         private final List<Cidade> destinos;
 
+        /**
+         * Uma cidade com nome e com uma lista de destinos diretos (saídas).
+         *
+         * @param nome Nome da cidade.
+         */
         public Cidade(final String nome) {
             this.nome = nome;
             this.destinos = new ArrayList<>();
         }
 
+        /**
+         * Insere um novo destino para a cidade (uma nova saída).
+         *
+         * @param destino Cidade de destino.
+         */
         public void insereDestino(final Cidade destino) {
             destinos.add(destino);
         }
@@ -289,6 +398,9 @@ public class TFinalJava {
             return nome;
         }
 
+        /**
+         * @return Lista de destinos da cidade.
+         */
         private List<Cidade> getDestinos() {
             return destinos;
         }
