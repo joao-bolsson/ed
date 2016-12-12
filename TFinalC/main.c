@@ -1,6 +1,8 @@
-#include "stdlib.h"
-#include "stdio.h"
+#include <stdio.h>
+#include <stdlib.h>
 #include "grafo.h"
+
+#define TAM_STR 50
 
 void imprime_tab(Grafo * grafo, Vertice * vertice);
 void imprime_tab_(Grafo * grafo, Vertice * vertice1, Vertice * vertice2, int prof);
@@ -82,6 +84,22 @@ int encontra_ligacao(Grafo * grafo, Vertice * vertice_origem, Vertice * vertice_
 }
 
 int main() {
+    
+    char cidadeA[TAM_STR], cidadeB[TAM_STR], distancia[TAM_STR];
+    
+    FILE *arq;
+    int unsigned k = 0;
+    arq = fopen("/home/joao/CC/ED/TFinal/dist/Debug/GNU-Linux/grafo.txt", "r");
+    if (arq == NULL) {
+        printf("Erro, nao foi possivel abrir o arquivo\n");
+    } else {
+        while ((fscanf(arq, "%s %s %s\n", cidadeA, cidadeB, distancia)) != EOF) {
+            printf("%s %s %s\n", cidadeA, cidadeB, distancia);
+            k++;
+        }
+        fclose(arq);
+    }
+    
     Grafo * grafo = grafo_cria();
     Vertice * vJoao = grafo_cria_vertice(grafo, "Joao");
     Vertice * vMaria = grafo_cria_vertice(grafo, "Maria");
@@ -108,7 +126,6 @@ int main() {
     printf("Os vertices de saida do vertice %s sao:\n", grafo_retorna_nome(vJoao));
     for (i = 0; i < cont; i++) {
         printf("%s\n", grafo_retorna_nome(vertices[i]));
-
     }
 
     encontra_mais_popular(grafo);
