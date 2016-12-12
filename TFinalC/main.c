@@ -84,9 +84,10 @@ int encontra_ligacao(Grafo * grafo, Vertice * vertice_origem, Vertice * vertice_
 }
 
 int main() {
-    
+
     char cidadeA[TAM_STR], cidadeB[TAM_STR], distancia[TAM_STR];
-    Vertice* vertices[TAM_STR * 2];
+    int distancia_int[TAM_STR];
+    Vertice * vertices[TAM_STR * 2];
     FILE *arq;
     int unsigned k = 0;
     arq = fopen("/home/joao/CC/ED/grafo.txt", "r");
@@ -98,59 +99,76 @@ int main() {
             vertices[k] = grafo_cria_vertice(grafo, cidadeA);
             k++;
             vertices[k] = grafo_cria_vertice(grafo, cidadeB);
-            printf("%s %s %s\n", cidadeA, cidadeB, distancia);
+            int dist = 0;
+            int aux = 1;
+            for (int unsigned i = 0; i < TAM_STR; i++) {
+                if (distancia[i] >= '0' && distancia[i] <= '9') {
+                    int num = 0;
+                    for (int z = '0'; z <= '9'; z++) {
+                        if (z == distancia[i]) {
+                            dist += num;
+                            //distancia_int[aux] = num;
+                            aux++;
+                            z = 'a';
+                        }
+                        num++;
+                    }
+                }
+            }
+
+            printf("%s %s %d\n", cidadeA, cidadeB, dist);
             k++;
         }
         fclose(arq);
     }
-/*
-    Grafo * grafo = grafo_cria();
-    Vertice * vJoao = grafo_cria_vertice(grafo, "Joao");
-    Vertice * vMaria = grafo_cria_vertice(grafo, "Maria");
-    Vertice * vJose = grafo_cria_vertice(grafo, "Jose");
-    Vertice * vAna = grafo_cria_vertice(grafo, "Ana");
-    Vertice * vCesar = grafo_cria_vertice(grafo, "Cesar");
-    Vertice * vCarlos = grafo_cria_vertice(grafo, "Carlos");
+    /*
+        Grafo * grafo = grafo_cria();
+        Vertice * vJoao = grafo_cria_vertice(grafo, "Joao");
+        Vertice * vMaria = grafo_cria_vertice(grafo, "Maria");
+        Vertice * vJose = grafo_cria_vertice(grafo, "Jose");
+        Vertice * vAna = grafo_cria_vertice(grafo, "Ana");
+        Vertice * vCesar = grafo_cria_vertice(grafo, "Cesar");
+        Vertice * vCarlos = grafo_cria_vertice(grafo, "Carlos");
 
-    grafo_insere_aresta(grafo, vJoao, vMaria, 1);
-    grafo_insere_aresta(grafo, vJoao, vJose, 1);
-    grafo_insere_aresta(grafo, vJoao, vAna, 1);
+        grafo_insere_aresta(grafo, vJoao, vMaria, 1);
+        grafo_insere_aresta(grafo, vJoao, vJose, 1);
+        grafo_insere_aresta(grafo, vJoao, vAna, 1);
 
-    grafo_insere_aresta(grafo, vMaria, vJose, 1);
-    grafo_insere_aresta(grafo, vMaria, vAna, 1);
-    grafo_insere_aresta(grafo, vJose, vAna, 1);
-    grafo_insere_aresta(grafo, vJose, vCarlos, 1);
+        grafo_insere_aresta(grafo, vMaria, vJose, 1);
+        grafo_insere_aresta(grafo, vMaria, vAna, 1);
+        grafo_insere_aresta(grafo, vJose, vAna, 1);
+        grafo_insere_aresta(grafo, vJose, vCarlos, 1);
 
-    grafo_insere_aresta(grafo, vCesar, vCarlos, 10);
+        grafo_insere_aresta(grafo, vCesar, vCarlos, 10);
 
-    int cont = 0;
+        int cont = 0;
 
-    Vertice ** vertices = grafo_busca_vertices_saida(grafo, vJoao, &cont);
-    int i;
-    printf("Os vertices de saida do vertice %s sao:\n", grafo_retorna_nome(vJoao));
-    for (i = 0; i < cont; i++) {
-        printf("%s\n", grafo_retorna_nome(vertices[i]));
-    }
+        Vertice ** vertices = grafo_busca_vertices_saida(grafo, vJoao, &cont);
+        int i;
+        printf("Os vertices de saida do vertice %s sao:\n", grafo_retorna_nome(vJoao));
+        for (i = 0; i < cont; i++) {
+            printf("%s\n", grafo_retorna_nome(vertices[i]));
+        }
 
-    encontra_mais_popular(grafo);
+        encontra_mais_popular(grafo);
 
-    Vertice * vOrigem = vJoao;
-    Vertice * vDestino = vCarlos;
-    int resp = encontra_ligacao(grafo, vOrigem, vDestino);
-    if (resp) {
-        printf("%s e %s estao conectados\n", grafo_retorna_nome(vOrigem), grafo_retorna_nome(vDestino));
-    } else {
-        printf("%s e %s nao estao conectados\n", grafo_retorna_nome(vOrigem), grafo_retorna_nome(vDestino));
-    }
-    vDestino = vCesar;
-    resp = encontra_ligacao(grafo, vOrigem, vDestino);
-    if (resp) {
-        printf("%s e %s estao conectados\n", grafo_retorna_nome(vOrigem), grafo_retorna_nome(vDestino));
-    } else {
-        printf("%s e %s nao estao conectados\n", grafo_retorna_nome(vOrigem), grafo_retorna_nome(vDestino));
-    }
-    grafo_libera(grafo);
-*/
+        Vertice * vOrigem = vJoao;
+        Vertice * vDestino = vCarlos;
+        int resp = encontra_ligacao(grafo, vOrigem, vDestino);
+        if (resp) {
+            printf("%s e %s estao conectados\n", grafo_retorna_nome(vOrigem), grafo_retorna_nome(vDestino));
+        } else {
+            printf("%s e %s nao estao conectados\n", grafo_retorna_nome(vOrigem), grafo_retorna_nome(vDestino));
+        }
+        vDestino = vCesar;
+        resp = encontra_ligacao(grafo, vOrigem, vDestino);
+        if (resp) {
+            printf("%s e %s estao conectados\n", grafo_retorna_nome(vOrigem), grafo_retorna_nome(vDestino));
+        } else {
+            printf("%s e %s nao estao conectados\n", grafo_retorna_nome(vOrigem), grafo_retorna_nome(vDestino));
+        }
+        grafo_libera(grafo);
+     */
 
     return 0;
 }
